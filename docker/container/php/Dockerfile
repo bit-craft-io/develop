@@ -29,7 +29,9 @@ RUN pecl install xhprof && docker-php-ext-enable xhprof \
     && chmod 777 /var/log/xhprof
 RUN apt-get install -y graphviz
 
+## dependencies for protobuf (bcmath for big int support, intl for general compatibility)
 RUN docker-php-ext-install intl && docker-php-ext-enable intl
+RUN docker-php-ext-install bcmath
 
 ## install systemd
 RUN apt-get install -y systemd systemd-sysv

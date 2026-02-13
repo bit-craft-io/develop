@@ -1,10 +1,9 @@
-# README
+## 概要
+- 開発で使用している環境や設定ファイルなど
 
-## docker
-- 開発環境
-
-## ide
-- PhpStormの設定
-
-## wsl
-- WSLの設定やスクリプト
+## ディレクトリ構成
+```
+docker                         # システム基盤
+ide                            # JetBrainsのIDEの設定
+wsl                            # WSLの設定やスクリプト
+```
