@@ -1,0 +1,2 @@
+export _WSL_SLINK_DIR=~/_bc.develop
+export _WSL_DOCKER_DIR="$_WSL_SLINK_DIR/docker"

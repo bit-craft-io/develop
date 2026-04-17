@@ -1,8 +1,28 @@
-_WSL_SLINK_DIR=~/_draft
-_WSL_DOCKER_DIR="$_WSL_SLINK_DIR/docker"
+#.envrc
+#export _WSL_SLINK_DIR=~/_bc.develop
+#export _WSL_DOCKER_DIR="$_WSL_SLINK_DIR/docker"
 
-source "$_WSL_SLINK_DIR/wsl/git-prompt.sh"
-PROMPT_COMMAND='PS1="\[\033[01;34m\]\u@wsl:\w\$\[\033[1;31m\]$(__git_ps1)\[\033[00m\] \$ "'
+_exist_dir() {
+  if [ ! -d "$1" ]; then
+    echo "not exist $1"
+    return 1
+  fi
+}
+
+_is_file() {
+  if [ ! -f "$1" ]; then
+    return 1
+  fi
+  return 0
+}
+
+update_ps1() {
+  local target="$_WSL_SLINK_DIR/wsl/git-prompt.sh"
+  if _is_file "$target"; then
+    source "$target"
+  fi
+  PS1="\[\033[01;34m\]\u@wsl:\w\$\[\033[1;31m\]$(__git_ps1)\[\033[00m\] \$ "
+}
 
 dokr() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
@@ -10,10 +30,12 @@ dokr() {
     echo "  Example:"
     echo "    ${FUNCNAME[0]} app            # Open bash shell in 'app' container"
     echo "    ${FUNCNAME[0]} -h             # Show this help"
-    return
+    return 1
   fi
 
-  pushd "$_WSL_DOCKER_DIR" || return
+  _exist_dir "$_WSL_DOCKER_DIR" || return 1
+
+  pushd "$_WSL_DOCKER_DIR" > /dev/null || return 0
   docker-compose exec "$@" bash --login
   popd > /dev/null
 }
@@ -25,10 +47,12 @@ comp() {
     echo "    ${FUNCNAME[0]} update         # Update dependencies"
     echo "    ${FUNCNAME[0]} dump-autoload  # Regenerate autoload files"
     echo "    ${FUNCNAME[0]} -h             # Show this help"
-    return
+    return 1
   fi
 
-  pushd "$_WSL_DOCKER_DIR" || return
+  _exist_dir "$_WSL_DOCKER_DIR" || return 1
+
+  pushd "$_WSL_DOCKER_DIR" || return 0
   docker-compose exec -u 1000:1000 -it app composer "$@"
   popd > /dev/null
 }
@@ -39,10 +63,12 @@ arts() {
     echo "    ${FUNCNAME[0]} migrate        # Run migrations"
     echo "    ${FUNCNAME[0]} optimize:clear # Clear all Laravel caches"
     echo "    ${FUNCNAME[0]} -h             # Show this help"
-    return
+    return 1
   fi
 
-  pushd "$_WSL_DOCKER_DIR" || return
+  _exist_dir "$_WSL_DOCKER_DIR" || return 1
+
+  pushd "$_WSL_DOCKER_DIR" || return 0
   docker-compose exec -u 1000:1000 -it app php artisan "$@"
   popd > /dev/null
 }
@@ -53,15 +79,17 @@ stan() {
     echo "    ${FUNCNAME[0]}                # Run static analysis only (--stan-only)"
     echo "    ${FUNCNAME[0]} unit           # Run unit test fixes only (--unit-only)"
     echo "    ${FUNCNAME[0]} -h             # Show this help"
-    return
+    return 1
   fi
 
-  pushd "$_WSL_DOCKER_DIR" || return
+  _exist_dir "$_WSL_DOCKER_DIR" || return 1
+
+  pushd "$_WSL_DOCKER_DIR" || return 0
   if [ "$1" = "unit" ]; then
     _current=$(pwd)
     docker-compose exec -it app php artisan cmd:fix --unit-only
     popd > /dev/null
-    return
+    return 1
   fi
 
   docker-compose exec -it app php artisan cmd:fix --stan-only
@@ -74,30 +102,48 @@ frmt() {
     echo "    ${FUNCNAME[0]}                # Format file and not update (--dry-run)"
     echo "    ${FUNCNAME[0]} commit         # Format file and update"
     echo "    ${FUNCNAME[0]} -h             # Show this help"
-    return
+    return 1
   fi
 
-  pushd "$_WSL_DOCKER_DIR" || return
+  _exist_dir "$_WSL_DOCKER_DIR" || return 1
+
+  pushd "$_WSL_DOCKER_DIR" || return 0
   if [ "$1" = "commit" ]; then
     docker-compose exec -it app php artisan cmd:format --run
     popd > /dev/null
-    return
+    return 1
   fi
 
   docker-compose exec -it app php artisan cmd:format --dry-run
   popd > /dev/null
 }
 cler() {
-  pushd "$_WSL_DOCKER_DIR" || return
+  _exist_dir "$_WSL_DOCKER_DIR" || return 1
+
+  pushd "$_WSL_DOCKER_DIR" || return 0
   docker-compose exec              -it app chown -R www-data:www-data /var/www/source/bootstrap/cache
   docker-compose exec              -it app chmod -R 777 /var/www/source/bootstrap/cache
   docker-compose exec              -it app chown -R www-data:www-data /var/www/source/storage
   docker-compose exec              -it app chmod -R 777 /var/www/source/storage
-  docker-compose exec -u root:root -it app php artisan config:clear
-  docker-compose exec -u root:root -it app php artisan cache:clear
-  docker-compose exec -u root:root -it app php artisan view:clear
-  docker-compose exec -u root:root -it app php artisan optimize:clear
+  docker-compose exec              -it app chown -R www-data:www-data /var/www/source/database
+  docker-compose exec              -it app chmod -R 777 /var/www/source/database
+  docker-compose exec -u 1000:1000 -it app php artisan config:clear
+  docker-compose exec -u 1000:1000 -it app php artisan cache:clear
+  docker-compose exec -u 1000:1000 -it app php artisan view:clear
+  docker-compose exec -u 1000:1000 -it app php artisan optimize:clear
   docker-compose exec -u 1000:1000 -it app composer dump-autoload
   docker-compose exec -u root:root -it app rm -rf storage/framework/cache/*
   popd > /dev/null
 }
+api() {
+  _exist_dir "$_WSL_SLINK_DIR" || return 1
+
+  if [ -f "$_WSL_SLINK_DIR/wsl/build-openapi.sh" ]; then
+    source "$_WSL_SLINK_DIR/wsl/build-openapi.sh"
+  fi
+}
+info() {
+    echo "_WSL_SLINK_DIR  : "$_WSL_SLINK_DIR
+    echo "_WSL_DOCKER_DIR : "$_WSL_DOCKER_DIR
+}
+PROMPT_COMMAND=update_ps1
