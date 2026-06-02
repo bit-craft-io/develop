@@ -17,12 +17,16 @@ _is_file() {
 }
 
 update_ps1() {
-  local target="$_WSL_SLINK_DIR/wsl/git-prompt.sh"
-  if _is_file "$target"; then
-    source "$target"
+  if [[ -z "$_GIT_PROMPT_LOADED" ]]; then
+    local target="$_WSL_SLINK_DIR/wsl/git-prompt.sh"
+    if _is_file "$target"; then
+      source "$target"
+      _GIT_PROMPT_LOADED=1
+    fi
   fi
   PS1="\[\033[01;34m\]\u@wsl:\w\$\[\033[1;31m\]$(__git_ps1)\[\033[00m\] \$ "
 }
+PROMPT_COMMAND=update_ps1
 
 dokr() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
@@ -39,6 +43,7 @@ dokr() {
   docker-compose exec "$@" bash --login
   popd > /dev/null
 }
+
 comp() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
     echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <composer-command>"
@@ -56,6 +61,7 @@ comp() {
   docker-compose exec -u 1000:1000 -it app composer "$@"
   popd > /dev/null
 }
+
 arts() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
     echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <artisan-command>"
@@ -72,6 +78,7 @@ arts() {
   docker-compose exec -u 1000:1000 -it app php artisan "$@"
   popd > /dev/null
 }
+
 stan() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
     echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} [unit|-h]"
@@ -95,6 +102,7 @@ stan() {
   docker-compose exec -it app php artisan cmd:fix --stan-only
   popd > /dev/null
 }
+
 frmt() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
     echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} [commit|-h]"
@@ -117,6 +125,7 @@ frmt() {
   docker-compose exec -it app php artisan cmd:format --dry-run
   popd > /dev/null
 }
+
 cler() {
   _exist_dir "$_WSL_DOCKER_DIR" || return 1
 
@@ -135,6 +144,7 @@ cler() {
   docker-compose exec -u root:root -it app rm -rf storage/framework/cache/*
   popd > /dev/null
 }
+
 api() {
   _exist_dir "$_WSL_SLINK_DIR" || return 1
 
@@ -142,8 +152,8 @@ api() {
     source "$_WSL_SLINK_DIR/wsl/build-openapi.sh"
   fi
 }
+
 info() {
     echo "_WSL_SLINK_DIR  : "$_WSL_SLINK_DIR
     echo "_WSL_DOCKER_DIR : "$_WSL_DOCKER_DIR
 }
-PROMPT_COMMAND=update_ps1
