@@ -110,7 +110,7 @@ sudo apt install php8.3-cli
 php -v
 ```
 
-- golang
+- go lang
 ```
 cd /tmp
 wget https://go.dev/dl/go1.26.3.linux-amd64.tar.gz
@@ -181,6 +181,9 @@ code .git/config
 [core]
 +	autocrlf = input
 +	eol = lf
+```
+```
+git config --global --add safe.directory *
 ```
 # docker
 - コンテナを起動、破棄するコマンド
