@@ -28,6 +28,9 @@ update_ps1() {
 }
 PROMPT_COMMAND=update_ps1
 
+make() {
+}
+
 dokr() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
     echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <service-name>"
