@@ -110,7 +110,7 @@ sudo apt install php8.3-cli
 php -v
 ```
 
-- go lang
+- Go
 ```
 cd /tmp
 wget https://go.dev/dl/go1.26.3.linux-amd64.tar.gz

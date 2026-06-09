@@ -57,11 +57,9 @@ services:
       dockerfile: Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${COMPOSE_PROJECT_NAME}
       TZ: 'Asia/Tokyo'
     volumes:
       - mysql_master:/var/lib/mysql
-      # - ./master.cnf:/etc/mysql/conf.d/master.cnf:ro
       - ./container/mysql/master/init.d:/docker-entrypoint-initdb.d
     ports:
       - 13306:3306
@@ -69,25 +67,27 @@ services:
     networks:
       - network-bc-draft
     restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   mysql_slave:
-    # image: mysql:5.7
     container_name: mysql_slave
     build:
       context: ./container/mysql/slave
       dockerfile: Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: root
-      # MYSQL_USER: guest
-      # MYSQL_PASSWORD: guest
       TZ: 'Asia/Tokyo'
     volumes:
       - mysql_slave:/var/lib/mysql
-      # - ./slave.cnf:/etc/mysql/conf.d/slave.cnf:ro
       - ./container/mysql/slave/init.d:/docker-entrypoint-initdb.d
     ports:
       - 13316:3306
     depends_on:
-      - mysql_master
+      mysql_master:
+        condition: service_healthy
     networks:
       - network-bc-draft
     restart: always
