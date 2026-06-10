@@ -74,9 +74,9 @@ artisan:
 .PHONY: migrate-all
 migrate-all:
 	$(call print_headline,${@})
-	migrate-app \
-	migrate-log \
-	migrate-test
+	@$(MAKE) migrate-app
+	@$(MAKE) migrate-log
+	@$(MAKE) migrate-test
 
 .PHONY: migrate-app
 migrate-app:
@@ -116,24 +116,25 @@ migrate-seeder:
 # ========================================
 # migrate:reset
 # ----------------------------------------
-migrate-all-reset:
+.PHONY: migrate-reset-all
+migrate-reset-all:
 	$(call print_headline,${@})
-	migrate-app-reset \
-	migrate-log-reset \
-	migrate-test-reset
+	@$(MAKE) migrate-reset-app
+	@$(MAKE) migrate-reset-log
+	@$(MAKE) migrate-reset-test
 
-.PHONY: migrate-app-reset
-migrate-app-reset:
+.PHONY: migrate-reset-app
+migrate-reset-app:
 	$(call print_headline,${@})
 	@$(MAKE) migrate-reset DB_NAME=app_db DB_PATH=database/migrations
 
-.PHONY: migrate-test-reset
-migrate-test-reset:
+.PHONY: migrate-reset-test
+migrate-reset-test:
 	$(call print_headline,${@})
 	@$(MAKE) migrate-reset DB_NAME=test_db DB_PATH=database/migrations
 
-.PHONY: migrate-log-reset
-migrate-log-reset:
+.PHONY: migrate-reset-log
+migrate-reset-log:
 	$(call print_headline,${@})
 	@$(MAKE) migrate-reset DB_NAME=log_db DB_PATH=database/migrations/log
 
