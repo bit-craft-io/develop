@@ -29,11 +29,24 @@ update_ps1() {
 PROMPT_COMMAND=update_ps1
 
 make() {
+  if [ -z "$1" ] || [ -z "$2" ] || [ "$1" = "-h" ]; then
+    echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <container> <make-command>"
+    echo "  Example:"
+    echo "    ${FUNCNAME[0]} app migrate-all  # exec 'make migrate-all' in 'app' container"
+    echo "    ${FUNCNAME[0]} -h               # Show this help"
+    return 1
+  fi
+
+  _exist_dir "$_WSL_DOCKER_DIR" || return 1
+
+  pushd "$_WSL_DOCKER_DIR" > /dev/null || return 0
+  docker-compose exec -u 1000:1000 -it "$1" make "${@:2}"
+  popd > /dev/null || return 0
 }
 
 dokr() {
   if [ -z "$1" ] || [ "$1" = "-h" ]; then
-    echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <service-name>"
+    echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <container>"
     echo "  Example:"
     echo "    ${FUNCNAME[0]} app            # Open bash shell in 'app' container"
     echo "    ${FUNCNAME[0]} -h             # Show this help"
@@ -44,42 +57,7 @@ dokr() {
 
   pushd "$_WSL_DOCKER_DIR" > /dev/null || return 0
   docker-compose exec "$@" bash --login
-  popd > /dev/null
-}
-
-comp() {
-  if [ -z "$1" ] || [ "$1" = "-h" ]; then
-    echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <composer-command>"
-    echo "  Example:"
-    echo "    ${FUNCNAME[0]} install        # Install dependencies"
-    echo "    ${FUNCNAME[0]} update         # Update dependencies"
-    echo "    ${FUNCNAME[0]} dump-autoload  # Regenerate autoload files"
-    echo "    ${FUNCNAME[0]} -h             # Show this help"
-    return 1
-  fi
-
-  _exist_dir "$_WSL_DOCKER_DIR" || return 1
-
-  pushd "$_WSL_DOCKER_DIR" || return 0
-  docker-compose exec -u 1000:1000 -it app composer "$@"
-  popd > /dev/null
-}
-
-arts() {
-  if [ -z "$1" ] || [ "$1" = "-h" ]; then
-    echo -e "\033[1mUsage:\033[0m ${FUNCNAME[0]} <artisan-command>"
-    echo "  Example:"
-    echo "    ${FUNCNAME[0]} migrate        # Run migrations"
-    echo "    ${FUNCNAME[0]} optimize:clear # Clear all Laravel caches"
-    echo "    ${FUNCNAME[0]} -h             # Show this help"
-    return 1
-  fi
-
-  _exist_dir "$_WSL_DOCKER_DIR" || return 1
-
-  pushd "$_WSL_DOCKER_DIR" || return 0
-  docker-compose exec -u 1000:1000 -it app php artisan "$@"
-  popd > /dev/null
+  popd > /dev/null || return 0
 }
 
 stan() {
@@ -126,25 +104,6 @@ frmt() {
   fi
 
   docker-compose exec -it app php artisan cmd:format --dry-run
-  popd > /dev/null
-}
-
-cler() {
-  _exist_dir "$_WSL_DOCKER_DIR" || return 1
-
-  pushd "$_WSL_DOCKER_DIR" || return 0
-  docker-compose exec              -it app chown -R www-data:www-data /var/www/source/bootstrap/cache
-  docker-compose exec              -it app chmod -R 777 /var/www/source/bootstrap/cache
-  docker-compose exec              -it app chown -R www-data:www-data /var/www/source/storage
-  docker-compose exec              -it app chmod -R 777 /var/www/source/storage
-  docker-compose exec              -it app chown -R www-data:www-data /var/www/source/database
-  docker-compose exec              -it app chmod -R 777 /var/www/source/database
-  docker-compose exec -u 1000:1000 -it app php artisan config:clear
-  docker-compose exec -u 1000:1000 -it app php artisan cache:clear
-  docker-compose exec -u 1000:1000 -it app php artisan view:clear
-  docker-compose exec -u 1000:1000 -it app php artisan optimize:clear
-  docker-compose exec -u 1000:1000 -it app composer dump-autoload
-  docker-compose exec -u root:root -it app rm -rf storage/framework/cache/*
   popd > /dev/null
 }
 
