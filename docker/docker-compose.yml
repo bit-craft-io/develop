@@ -5,7 +5,6 @@ services:
       TZ: 'Asia/Tokyo'
     volumes:
       - /var/www/${__WSL_COMPOSE_PROJECT_DIR:-none}:/var/www/source
-      - ./Makefile:/var/www/source/Makefile
       - ./container/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./container/php/.bash_aliases:/root/.bash_aliases:ro
       - ./container/php/.bashrc:/root/.bashrc:ro
