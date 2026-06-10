@@ -146,6 +146,13 @@ migrate-reset:
 # ========================================
 # migrate-fresh
 # ----------------------------------------
+.PHONY: migrate-fresh-all
+migrate-fresh-all:
+	$(call print_headline,${@})
+	@$(MAKE) migrate-fresh app_db
+	@$(MAKE) migrate-fresh test_db
+	@$(MAKE) migrate-fresh log_db
+
 DB_NAME_ARGS := $(filter-out migrate-fresh,$(MAKECMDGOALS))
 
 .PHONY: migrate-fresh
@@ -156,13 +163,6 @@ migrate-fresh:
 # 必須のおなじない
 %:
 	@:
-
-.PHONY: migrate-fresh-all
-migrate-fresh-all:
-	$(call print_headline,${@})
-	@$(MAKE) migrate-fresh app_db
-	@$(MAKE) migrate-fresh test_db
-	@$(MAKE) migrate-fresh log_db
 
 # ========================================
 # migrate:reset
