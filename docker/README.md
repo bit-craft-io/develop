@@ -1,6 +1,7 @@
-# Commands
+## 概要
+- WSL内の各種設定
 
-## env value
+## 作業用に環境変数を設定
 ```
 _PROJECT_DIR=/var/www/bc.develop
 ```

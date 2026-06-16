@@ -104,6 +104,17 @@ services:
     depends_on:
       - app
     restart: always
+  redoc:
+    build: ./container/redoc
+    environment:
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - /var/www/${__WSL_COMPOSE_PROJECT_DIR:-none}:/var/www/source
+    working_dir: /var/www/source
+    networks:
+      - network-bc-draft
+    restart: always
+    command: tail -f /dev/null
 volumes:
   mysql_master:
   mysql_slave:

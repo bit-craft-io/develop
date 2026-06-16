@@ -1,4 +1,7 @@
-## install distribution
+## 概要
+- 開発環境の作成
+
+### ディストリビューションをインストール
 ```
 wsl --list --online
 wsl --install Ubuntu-24.04 --name server
@@ -10,8 +13,8 @@ wsl -d server -u guest
 wsl --shutdown
 ```
 
-## setting
-- sudo no password
+### WSLの設定
+- sudo パスワードなし
 ```
 sudo visudo
 ```
@@ -37,17 +40,13 @@ Host bc
 - symbolic link
 ```
 cd ~
-ln -s /mnt/d/self/projects/doll/develop _rg.develop
 ln -s /var/www/bc.draft _bc.draft
 ln -s /var/www/bc.develop _bc.develop
-ln -s /var/www/bc.paiza _bc.paiza
 ln -s /var/www/bc.sandbox _bc.sandbox
-ln -s /var/www/bc.tool _bc.tool
 ll
 ```
 
 - alias
-  - .bash_aliases にはコマンドが設定されている
 ```
 sudo cp -a /var/www/bc.develop/wsl/.bash_aliases ~/.bash_aliases
 . ~/.bashrc
@@ -55,24 +54,7 @@ sudo cp -a /var/www/bc.develop/wsl/.bash_aliases ~/.bash_aliases
 info
 ```
 
-
-- remove Zone.Identifier
-  - Windwos から WSL にドラッグコピーでできたゴミファイル（Zone.Identifier）を削除
-```
-FIND_DIR=/var/www
-find $FIND_DIR -name "*Zone.Identifier" -type f -print
-
-sudo find $FIND_DIR -name "*Zone.Identifier" -type f -delete
-find $FIND_DIR -name "*Zone.Identifier" -type f | wc -l
-```
-
-- permission
-```
-USER=guest
-sudo chown -R $USER:$USER $FIND_DIR/*
-```
-
-## install
+## インストール
 - direnv
   - ディレクトリ毎に環境変数を自動設定 
   - .bash_aliases と併用して使用
@@ -165,14 +147,13 @@ source ~/.bashrc
 - clone
 ```
 cd /tmp
-git clone git@bc:bit-craft-io/draft.git draft
-sudo mv draft /var/www/
+git clone git@bc:bit-craft-io/ddd_nukui.git bc.draft
+sudo mv bc.draft /var/www/
 ```
-
 - config
 ```
-cd /var/www/draft
-code .git/config
+cd /var/www/bc.draft
+vim .git/config
 ```
 ```
 [user]
@@ -190,49 +171,42 @@ git config --global --add safe.directory *
 ```
 docker-compose up -d
 docker-compose down -v
-docker-compose stop
-docker-compose start
+docker-compose build redoc
+docker-compose up -d redoc
 ```
 - .bash_aliases に設定されているコマンド
 - コンテナにコマンドを送信
 ```
-dokr -h
-comp -h
-arts -h
-stan -h
-frmt -h
-cler
+
 info
 
-dokr app
-comp install
-comp update
-comp dump-autoload
-arts migrate
-arts migrate:rollback
-arts config:clear
-arts cache:clear
-arts view:clear
-arts key:generate
-arts ide-helper:generate
+make dc-login NAME=app
+make dc-make NAME=app CMD="laravel-init"
+make dc-make NAME=app CMD="laravel-clean"
+make dc-make NAME=app CMD="laravel-reset"
+make dc-make NAME=app CMD="migrate-seeder-dev"
+make dc-make NAME=app CMD="job-restart"
+make dc-make NAME=app CMD="php-fix-dry"
+make dc-make NAME=app CMD="php-fix"
+make dc-make NAME=app CMD="php-stan"
+make dc-make NAME=app CMD="artisan make:migration create_u_dummies_table"
 
-arts migrate:refresh --seed
-arts db:seed DatabaseSeeder
-arts optimize:clear
+make dc-make NAME=redoc CMD="openapi-build"
+```
 
-arts db:seed DevelopMasterSeederDoll
+### その他
+- remove Zone.Identifier
+  - Windwos から WSL にドラッグコピーでできたゴミファイル（Zone.Identifier）を削除
+```
+FIND_DIR=/var/www
+find $FIND_DIR -name "*Zone.Identifier" -type f -print
 
-arts config:clear
-arts cache:clear
-arts migrate:reset
-arts migrate
-arts db:seed --class=DevelopSeeder
-arts db:seed --class=MasterSeeder
+sudo find $FIND_DIR -name "*Zone.Identifier" -type f -delete
+find $FIND_DIR -name "*Zone.Identifier" -type f | wc -l
+```
 
-arts make:migration create_u_users_table
-arts make:migration create_m_items_table
-arts make:migration create_u_items_table
-arts make:controller Api/AccountController
-
-arts route:list
+- permission
+```
+USER=guest
+sudo chown -R $USER:$USER $FIND_DIR/*
 ```
