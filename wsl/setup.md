@@ -33,7 +33,7 @@ vim ~/.ssh/config
 Host bc
   HostName github.com
   User git
-  IdentityFile /mnt/d/self/projects/bit-craft/.ssh/bit-craft-io
+  IdentityFile ~/.ssh/bit-craft-io
   IdentitiesOnly yes
 ```
 
