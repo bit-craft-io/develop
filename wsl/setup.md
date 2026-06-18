@@ -12,7 +12,7 @@ wsl -d server
 wsl -d server -u guest
 wsl --shutdown
 ```
-
+---
 ### WSLの設定
 - sudo パスワードなし
 ```
@@ -54,7 +54,7 @@ sudo cp -a /var/www/bc.develop/wsl/.bash_aliases ~/.bash_aliases
 info
 ```
 
-## インストール
+### インストール
 - direnv
   - ディレクトリ毎に環境変数を自動設定 
   - .bash_aliases と併用して使用
@@ -63,7 +63,7 @@ sudo apt update
 sudo apt install direnv
 direnv allow
 
-echo '# add 2026.05.27 direnv' >> ~/.bashrc
+echo '# add $(date +'%Y.%m.%d') direnv' >> ~/.bashrc
 echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
 echo 'export DIRENV_LOG_FORMAT=""' >> ~/.bashrc
 source ~/.bashrc
@@ -88,7 +88,8 @@ ctrl+X, Enter
 
 - php
 ```
-sudo apt install php8.3-cli
+sudo apt install php8.4-cli
+sudo apt install php-xdebug
 php -v
 ```
 
@@ -143,7 +144,7 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-# git
+### Gitの設定
 - clone
 ```
 cd /tmp
@@ -166,18 +167,26 @@ vim .git/config
 ```
 git config --global --add safe.directory *
 ```
-# docker
-- コンテナを起動、破棄するコマンド
+
+### 作業用に環境変数を設定
 ```
+_DEVELOP_DIR=/var/www/bc.develop
+_PROJECT_DIR=/var/www/bc.draft
+```
+
+### Dockerの操作
+- コンテナを生成・破棄
+```
+pushd $_DEVELOP_DIR/docker
 docker-compose up -d
 docker-compose down -v
 docker-compose build redoc
 docker-compose up -d redoc
+popd
 ```
-- .bash_aliases に設定されているコマンド
-- コンテナにコマンドを送信
+- Makefile のコマンドからコンテナ操作
 ```
-
+pushd $_DEVELOP_DIR/docker
 info
 
 make dc-login NAME=app
@@ -190,12 +199,22 @@ make dc-make NAME=app CMD="php-fix-dry"
 make dc-make NAME=app CMD="php-fix"
 make dc-make NAME=app CMD="php-stan"
 make dc-make NAME=app CMD="artisan make:migration create_u_dummies_table"
+make dc-make NAME=app CMD="composer update"
 
 make dc-make NAME=redoc CMD="openapi-build"
+popd
 ```
 
 ### その他
-- remove Zone.Identifier
+- direnvの設定
+```
+cp -a $_DEVELOP_DIR/wsl/envrc $_PROJECT_DIR/.envrc
+
+cd $_PROJECT_DIR
+echo '.envrc' >> .git/info/exclude
+cat .git/info/exclude
+```
+- Zone.Identifier 削除
   - Windwos から WSL にドラッグコピーでできたゴミファイル（Zone.Identifier）を削除
 ```
 FIND_DIR=/var/www
@@ -205,7 +224,7 @@ sudo find $FIND_DIR -name "*Zone.Identifier" -type f -delete
 find $FIND_DIR -name "*Zone.Identifier" -type f | wc -l
 ```
 
-- permission
+- ファイル・ディレクトリの権限変更
 ```
 USER=guest
 sudo chown -R $USER:$USER $FIND_DIR/*
