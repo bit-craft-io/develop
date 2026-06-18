@@ -8,20 +8,12 @@ CMD  ?= date
 .PHONY: env-info
 env-info:
 	@echo "_WSL_SLINK_DIR  : $(_WSL_SLINK_DIR)"
-	@echo "_WSL_DOCKER_DIR  : $(_WSL_DOCKER_DIR)"
+	@echo "_WSL_DOCKER_DIR : $(_WSL_DOCKER_DIR)"
 
 .PHONY: dc-login
 dc-login:
 	cd $(_WSL_DOCKER_DIR) && docker-compose exec $(NAME) bash --login
 
-# 必須のおなじない
-%:
-	@:
-
 .PHONY: dc-make
 dc-make:
 	cd $(_WSL_DOCKER_DIR) && docker-compose exec -u 1000:1000 -it $(NAME) make -- $(CMD)
-
-# 必須のおなじない
-%:
-	@:

@@ -27,6 +27,8 @@ RUN pecl install redis && docker-php-ext-enable redis
 RUN pecl install xhprof && docker-php-ext-enable xhprof \
     && mkdir -p /var/log/xhprof \
     && chmod 777 /var/log/xhprof
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
 RUN apt-get install -y graphviz
 
 ## dependencies for protobuf (bcmath for big int support, intl for general compatibility)
