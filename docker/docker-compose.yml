@@ -7,7 +7,6 @@ services:
       - /var/www/${__WSL_COMPOSE_PROJECT_DIR:-none}:/var/www/source
       - ./container/php/php.ini:/usr/local/etc/php/php.ini:ro
       - ./container/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
-      - ./container/php/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
       - ./container/php/.bash_aliases:/root/.bash_aliases:ro
       - ./container/php/.bashrc:/root/.bashrc:ro
     working_dir: /var/www/source
