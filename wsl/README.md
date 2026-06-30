@@ -19,8 +19,8 @@ wsl --shutdown
 sudo visudo
 ```
 ```
-# Add this below:
-guest   ALL=(ALL)       NOPASSWD:ALL
+# add this last row:
+guest ALL=(ALL) NOPASSWD:ALL
 ```
 ```
 ctrl+X, Enter
@@ -28,13 +28,18 @@ ctrl+X, Enter
 
 - ssh
 ```
+mkdir ~/.ssh
 vim ~/.ssh/config
-
+```
+```
 Host bc
   HostName github.com
   User git
   IdentityFile ~/.ssh/bit-craft-io
   IdentitiesOnly yes
+```
+```
+chmod 600 ~/.ssh/bit-craft-io
 ```
 
 - symbolic link
@@ -48,34 +53,43 @@ ll
 
 - alias
 ```
-sudo cp -a /var/www/bc.develop/wsl/.bash_aliases ~/.bash_aliases
+_DEV_WSL=/var/www/bc.develop/wsl
+sudo cp -a ${_DEV_WSL}/.bash_aliases ~/.bash_aliases
+sudo cp -a ${_DEV_WSL}/.git-prompt ~/.git-prompt
 . ~/.bashrc
-
+```
+```
 info
 ```
 
 ### インストール
 - direnv
-  - ディレクトリ毎に環境変数を自動設定 
+  - ディレクトリ毎に環境変数を自動設定
   - .bash_aliases と併用して使用
 ```
 sudo apt update
 sudo apt install direnv
-direnv allow
-
+```
+```
 echo '# add $(date +'%Y.%m.%d') direnv' >> ~/.bashrc
 echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
 echo 'export DIRENV_LOG_FORMAT=""' >> ~/.bashrc
+```
+```
 source ~/.bashrc
-
 direnv version
+```
+```
+# .envrc のあるディレクトリでコマンドを実行
+direnv allow
 ```
 
 - nodejs
 ```
 sudo apt purge nodejs npm
 sudo snap install node --classic --channel=22/stable
-
+```
+```
 sudo nano /etc/wsl.conf
 ```
 ```
@@ -90,6 +104,8 @@ ctrl+X, Enter
 ```
 sudo apt install php8.4-cli
 sudo apt install php-xdebug
+```
+```
 php -v
 ```
 
@@ -99,22 +115,25 @@ cd /tmp
 wget https://go.dev/dl/go1.26.3.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf go1.26.3.linux-amd64.tar.gz
-
-echo '# add 2026.05.27 golang' >> ~/.bashrc
+```
+```
+echo '# add $(date +'%Y.%m.%d') golang' >> ~/.bashrc
 echo 'export PATH=/usr/local/go/bin:$PATH' >> ~/.bashrc
+```
+```
 source ~/.bashrc
-
 go version
 ```
 
 - .bashrc
 ```
-echo '# add 2026.05.28 history' >> ~/.bashrc
+echo '# add $(date +'%Y.%m.%d') history' >> ~/.bashrc
 echo 'export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "' >> ~/.bashrc
 echo 'export HISTIGNORE="history:history *:ls:exit"' >> ~/.bashrc
 echo 'export HISTCONTROL=ignoreboth' >> ~/.bashrc
+```
+```
 source ~/.bashrc
-
 history
 ```
 
@@ -124,24 +143,17 @@ sudo apt install make
 make -v
 ```
 
-- aqua
-```
-curl -sSfL https://raw.githubusercontent.com/aquaproj/aqua-installer/v4.0.2/aqua-installer | bash
-
-echo '# add 2026.05.28 aqua' >> ~/.bashrc
-echo 'export PATH=${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
-
-aqua version
-```
-
-- claude code
+- claude
 ```
 curl -fsSL https://claude.ai/install.sh | bash
-
-echo '# add 2026.05.28 claude' >> ~/.bashrc
+```
+```
+echo '# add $(date +'%Y.%m.%d') claude' >> ~/.bashrc
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+```
+```
 source ~/.bashrc
+claude -v
 ```
 
 ### Gitの設定
