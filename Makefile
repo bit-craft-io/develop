@@ -12,8 +12,14 @@ env-info:
 
 .PHONY: dc-login
 dc-login:
-	cd $(_WSL_DOCKER_DIR) && docker-compose exec $(NAME) bash --login
+	@cd $(_WSL_DOCKER_DIR) && docker-compose exec $(NAME) bash --login
 
 .PHONY: dc-make
 dc-make:
-	cd $(_WSL_DOCKER_DIR) && docker-compose exec -u 1000:1000 -it $(NAME) make -- $(CMD)
+	@cd $(_WSL_DOCKER_DIR) && docker-compose exec -u 1000:1000 -it $(NAME) make -- $(CMD)
+
+# 必須のおまじない
+#%:
+#	@:
+.DEFAULT:
+	@echo "--- [WARN] target '$@' unknown ---"
