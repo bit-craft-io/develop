@@ -18,6 +18,22 @@ dc-login:
 dc-make:
 	@cd $(_WSL_DOCKER_DIR) && docker-compose exec -u 1000:1000 -it $(NAME) make -- $(CMD)
 
+.PHONY: restart
+restart:
+	docker compose restart
+
+.PHONY: up
+up:
+	docker compose -f ./docker/docker-compose.yml up -d
+
+.PHONY: down
+down:
+	docker compose -f ./docker/docker-compose.yml down
+
+.PHONY: clean
+clean:
+	docker compose -f ./docker/docker-compose.yml down -v
+
 # 必須のおまじない
 #%:
 #	@:
