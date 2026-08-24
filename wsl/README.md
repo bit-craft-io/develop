@@ -71,7 +71,7 @@ sudo apt update
 sudo apt install direnv
 ```
 ```
-echo '# add $(date +'%Y.%m.%d') direnv' >> ~/.bashrc
+echo "# add $(date +'%Y.%m.%d') direnv" >> ~/.bashrc
 echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
 echo 'export DIRENV_LOG_FORMAT=""' >> ~/.bashrc
 ```
@@ -100,15 +100,6 @@ appendWindowsPath = false
 ctrl+X, Enter
 ```
 
-- php
-```
-sudo apt install php8.4-cli
-sudo apt install php-xdebug
-```
-```
-php -v
-```
-
 - Go
 ```
 cd /tmp
@@ -117,7 +108,7 @@ sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf go1.26.3.linux-amd64.tar.gz
 ```
 ```
-echo '# add $(date +'%Y.%m.%d') golang' >> ~/.bashrc
+echo "# add $(date +'%Y.%m.%d') golang" >> ~/.bashrc
 echo 'export PATH=/usr/local/go/bin:$PATH' >> ~/.bashrc
 ```
 ```
@@ -127,7 +118,7 @@ go version
 
 - .bashrc
 ```
-echo '# add $(date +'%Y.%m.%d') history' >> ~/.bashrc
+echo "# add $(date +'%Y.%m.%d') history" >> ~/.bashrc
 echo 'export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "' >> ~/.bashrc
 echo 'export HISTIGNORE="history:history *:ls:exit"' >> ~/.bashrc
 echo 'export HISTCONTROL=ignoreboth' >> ~/.bashrc
