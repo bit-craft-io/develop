@@ -2,7 +2,9 @@
 #container := $(word 1, $(make_args))
 #cmd       := $(wordlist 2, $(words $(make_args)), $(make_args))
 
-NAME ?= app
+ifneq ($(origin NAME),command line)
+NAME := app
+endif
 CMD  ?= date
 
 .PHONY: env-info
@@ -33,6 +35,13 @@ down:
 .PHONY: clean
 clean:
 	docker compose -f ./docker/docker-compose.yml down -v
+
+SERVICES ?= mysql_master mysql_slave
+
+.PHONY: db-reset
+db-reset:
+	docker compose -f ./docker/docker-compose.yml down -v $(SERVICES)
+	docker compose -f ./docker/docker-compose.yml up -d --build $(SERVICES)
 
 # 必須のおまじない
 #%:

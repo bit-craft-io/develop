@@ -148,21 +148,14 @@ claude -v
 ```
 
 ### Gitの設定
-- clone
-```
-cd /tmp
-git clone git@bc:bit-craft-io/ddd_nukui.git bc.draft
-sudo mv bc.draft /var/www/
-```
 - config
 ```
-cd /var/www/bc.draft
 vim .git/config
 ```
 ```
 [user]
-+	email = bit.craft@outlook.com
-+	name  = bit-craft-io
++	email =email
++	name  = name
 [core]
 +	autocrlf = input
 +	eol = lf
@@ -175,37 +168,6 @@ git config --global --add safe.directory *
 ```
 _DEVELOP_DIR=/var/www/bc.develop
 _PROJECT_DIR=/var/www/bc.draft
-```
-
-### Dockerの操作
-- コンテナを生成・破棄
-```
-pushd $_DEVELOP_DIR/docker
-docker-compose up -d
-docker-compose down -v
-docker-compose build redoc
-docker-compose up -d redoc
-popd
-```
-- Makefile のコマンドからコンテナ操作
-```
-pushd $_DEVELOP_DIR/docker
-info
-
-make dc-login NAME=app
-make dc-make NAME=app CMD="laravel-init"
-make dc-make NAME=app CMD="laravel-clean"
-make dc-make NAME=app CMD="laravel-reset"
-make dc-make NAME=app CMD="migrate-seeder-dev"
-make dc-make NAME=app CMD="job-restart"
-make dc-make NAME=app CMD="php-fix-dry"
-make dc-make NAME=app CMD="php-fix"
-make dc-make NAME=app CMD="php-stan"
-make dc-make NAME=app CMD="artisan make:migration create_u_dummies_table"
-make dc-make NAME=app CMD="composer update"
-
-make dc-make NAME=redoc CMD="openapi-build"
-popd
 ```
 
 ### その他
